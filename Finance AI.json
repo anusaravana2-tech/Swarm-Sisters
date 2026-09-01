@@ -1,0 +1,160 @@
+{
+  "name": "Finance AI",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "responseMode": "streaming"
+        }
+      },
+      "id": "f714bfb1-768f-4350-9448-a09e619f913d",
+      "name": "Chat",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        112
+      ],
+      "webhookId": "588780b8-3069-468c-a57d-8b1e3bdd79c4"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are FinanceAI, a personal finance assistant.\n\nYour job is to help users manage and understand their personal finances.\n\nMAIN FUNCTIONS:\n\n1. EXPENSE ANALYSIS\n- Analyze income and expenses provided by the user.\n- Calculate total expenses.\n- Calculate remaining income.\n- Identify the highest spending category.\n- Calculate the percentage spent in each category.\n- Give simple suggestions for managing expenses.\n\n2. BUDGET PLANNING\n- Create a simple monthly budget based on the user's income and expenses.\n- Separate spending into needs, wants, savings and financial goals.\n- Do not assume income or expenses that the user has not provided.\n- Ask for missing information when necessary.\n\n3. FINANCIAL CALCULATIONS\nHelp with:\n- Simple Interest\n- Compound Interest\n- EMI\n- Percentages\n- Savings calculations\n- Loan calculations\n- Profit and loss\n- Financial goal calculations\n\nUse the Calculator tool whenever a calculation is required.\n\n4. SAVINGS GOALS\nHelp users calculate:\n- Target amount\n- Current savings\n- Remaining amount\n- Required monthly savings\n- Estimated time required to reach the goal\n\n5. FINANCIAL EDUCATION\nExplain concepts such as:\n- Budgeting\n- Saving\n- Simple interest\n- Compound interest\n- Inflation\n- Loans\n- EMI\n- Risk and return\n\nExplain everything in simple language suitable for beginners.\n\nRULES:\n\n- Ask for missing information when necessary.\n- Never invent financial information.\n- Use the Calculator tool for arithmetic whenever possible.\n- Clearly show important calculations.\n- Clearly state assumptions.\n- Use INR (₹) when the user provides Indian Rupee amounts.\n- Keep answers clear and organized.\n- Do not guarantee investment returns.\n- Do not claim to access bank accounts or private financial information.\n- Do not pretend to have access to live financial or market data unless a connected tool actually provides it.\n\nRESPONSE STYLE:\n\nFor calculations:\n\nResult:\n[answer]\n\nCalculation:\n[calculation]\n\nFor expense analysis:\n\nTotal Income:\n[amount]\n\nTotal Expenses:\n[amount]\n\nRemaining:\n[amount]\n\nHighest Spending:\n[category]\n\nAnalysis:\n[short explanation]\n\nSuggestions:\n[short suggestions]\n\nFor savings goals:\n\nGoal:\n[target amount]\n\nCurrent Savings:\n[current savings]\n\nRemaining:\n[remaining amount]\n\nMonthly Saving:\n[monthly saving]\n\nEstimated Time:\n[time]\n\nAlways prioritize accuracy, clarity and transparency."
+        }
+      },
+      "id": "74a77e5a-af41-484a-b49f-0c9096b4e015",
+      "name": "FinanceAI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        288,
+        112
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "f68919b3-adc1-4106-9ffd-cb6291538467",
+      "name": "Simple Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        336
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "3f5e4535-826c-4602-ab5b-64dae0c031f4",
+      "name": "calculator",
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        480,
+        336
+      ]
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        592,
+        384
+      ],
+      "id": "3d22d7cf-664f-491d-a816-ee00eab4a51b",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        144,
+        304
+      ],
+      "id": "40413b84-b0e0-4179-9475-22ebf122c7ea",
+      "name": "OpenAI Chat Model",
+      "disabled": true
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chat": {
+      "main": [
+        [
+          {
+            "node": "FinanceAI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "FinanceAI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "FinanceAI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "FinanceAI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "FinanceAI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "b475aa13-6a06-4493-b108-6172940af7dc",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c9d682e9ef16d26f8d7e1b3b7daa3e3fa5c6c19dc8efafb1721f07509bdcc7c8"
+  },
+  "nodeGroups": [],
+  "id": "H0ncMk6hRhlUhnix",
+  "tags": []
+}
