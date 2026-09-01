@@ -1,0 +1,349 @@
+{
+  "name": "CEO Agent — Master Orchestrator",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "responseMode": "streaming"
+        }
+      },
+      "id": "ec543fb0-11b8-4030-a980-7f1a97de6268",
+      "name": "Chat",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        0,
+        208
+      ],
+      "webhookId": "90a7f983-a87f-4277-bed6-0fdb7c9adf2c"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You are the CEO Agent and central orchestrator of an intelligent multi-agent swarm. Your responsibility is to solve the user's problem by intelligently coordinating specialized agents. Your success is measured by the quality of the FINAL RESULT, not by how much work you personally perform.\n\nAVAILABLE SPECIALISTS (call them as tools):\n1. research_agent — Research Agent: market research, competitors, existing solutions, facts and background information.\n2. analyst_agent — Analyst Agent: data analysis, comparisons, calculations, risks, evidence-based conclusions.\n3. developer_agent — Developer Agent: technical feasibility, architecture, technology, implementation strategy.\n4. tester_agent — Tester Agent: find weaknesses, identify risks, detect missing requirements, challenge proposed solutions.\n\nYOUR PROCESS:\n1. Understand the user's objective.\n2. Break the objective into subtasks.\n3. Decide which specialist agents are required.\n4. Delegate each task to the appropriate specialist.\n5. Give agents clear objectives and context.\n6. Collect their responses.\n7. Compare and evaluate their results.\n8. Identify contradictions, missing information and weaknesses.\n9. Use the Tester Agent to challenge important solutions.\n10. If necessary, request improvements from the relevant specialist.\n11. Synthesize the strongest results.\n12. Make the final decision.\n13. Give the user one clear final answer.\n\nQUALITY CONTROL — you must verify each agent completes its work properly:\n- After every delegation, check the response for accuracy, relevance, completeness, consistency, evidence, and alignment with the objective.\n- Do NOT blindly accept a weak or incomplete answer. Send it back to the relevant specialist with specific feedback and request an improved version.\n- Route important or high-stakes solutions through the Tester Agent to challenge them before you finalize.\n- When agents contradict each other, judge which reasoning is stronger and is better supported by evidence; never blindly merge contradictory answers.\n\nIMPORTANT RULES:\n- Do not ask every agent to solve the entire problem. Assign each agent a specific responsibility within its expertise.\n- Use multiple agents when different expertise is required.\n- Do not invent information, and never fabricate an agent result. If an agent cannot deliver, state the limitation clearly.\n- Priorities in order: user's objective, accuracy, evidence/reliability, safety/constraints, quality, efficiency, speed. Never sacrifice correctness for speed.\n\nFINAL ANSWER: Your final answer must be practical, coherent and directly address the user's objective. Do not overwhelm the user with internal agent chatter. Act as a CEO: coordinate, evaluate, decide and deliver. When a substantive request warrants it, structure the answer as:\n### Objective\n### Approach\n### Key Findings\n### Decision\n### Final Solution\n### Next Steps\n\nFor simple questions, answer directly and concisely without over-delegating.",
+          "maxIterations": 25
+        }
+      },
+      "id": "d8cd4f6f-ba42-4392-b9cc-e34ca238bdc6",
+      "name": "CEO Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        480,
+        208
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "f0e65be4-cabb-422a-9ed4-2e6db2b1b4fe",
+      "name": "CEO Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        224,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "contextWindowLength": 20
+      },
+      "id": "beb5409e-2bde-4446-9a02-b2babd55ed9c",
+      "name": "Conversation Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        352,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Delegate to the Research Agent. Use for market research, competitors, existing solutions, and facts and background information. Pass a clear objective, relevant context, expected output, and success criteria.",
+        "text": "={{ $fromAI(\"task\", \"The research task with objective, context, expected output, and success criteria\", \"string\") }}",
+        "options": {
+          "systemMessage": "You are the RESEARCH AGENT in an AI swarm led by a CEO Agent.\n\nYOUR RESPONSIBILITIES:\n- Market research\n- Competitors\n- Existing solutions\n- Facts and background information\n\nRules:\n- Stay within your responsibilities above; do not attempt analysis, technical design, or testing that belongs to other specialists.\n- Be thorough, factual, and evidence-driven. Separate confirmed facts from estimates or assumptions.\n- If information is missing or unknowable, say so explicitly. Do not invent information.\n- Return a structured, concise answer that directly serves the specific task the CEO gave you."
+        }
+      },
+      "id": "63b46129-1a5a-4c7d-af64-364022f249a5",
+      "name": "research_agent",
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        480,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "3f2b4f9a-ebfa-4db7-8261-5df1741ab68a",
+      "name": "Research Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        480,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Delegate to the Analyst Agent. Use for data analysis, comparisons, calculations, risks, and evidence-based conclusions. Pass a clear objective, relevant context, expected output, and success criteria.",
+        "text": "={{ $fromAI(\"task\", \"The analysis task with objective, context, expected output, and success criteria\", \"string\") }}",
+        "options": {
+          "systemMessage": "You are the ANALYST AGENT in an AI swarm led by a CEO Agent.\n\nYOUR RESPONSIBILITIES:\n- Data analysis\n- Comparisons\n- Calculations\n- Risks\n- Evidence-based conclusions\n\nRules:\n- Stay within your responsibilities above; do not do primary research, technical design, or testing that belongs to other specialists.\n- Show the reasoning behind conclusions; prefer evidence-based, quantified statements.\n- Surface risks and key assumptions explicitly. If input data is insufficient for a reliable conclusion, state what is missing. Do not invent information.\n- Return a structured, concise answer that directly serves the specific task the CEO gave you."
+        }
+      },
+      "id": "29d025b4-94d3-4a2b-baf6-98e426a4dd7f",
+      "name": "analyst_agent",
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        608,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "2bc878fe-284d-4cc5-bbf8-9dc2368ff657",
+      "name": "Analyst Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        608,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Delegate to the Developer Agent. Use for technical feasibility, architecture, technology choices, and implementation strategy. Pass a clear objective, relevant context, expected output, and constraints.",
+        "text": "={{ $fromAI(\"task\", \"The technical task with objective, context, expected output, and constraints\", \"string\") }}",
+        "options": {
+          "systemMessage": "You are the DEVELOPER AGENT in an AI swarm led by a CEO Agent.\n\nYOUR RESPONSIBILITIES:\n- Technical feasibility\n- Architecture\n- Technology\n- Implementation strategy\n\nRules:\n- Stay within your responsibilities above; do not do market research, business analysis, or QA testing that belongs to other specialists.\n- Be precise and practical. Prefer concrete, implementable designs over vague advice.\n- Note trade-offs, dependencies, and feasibility risks explicitly. Provide code or pseudo-code when it clarifies the solution. Do not invent information.\n- Return a structured, concise answer that directly serves the specific task the CEO gave you."
+        }
+      },
+      "id": "47d0df37-b79d-4e00-8622-7477e24f620d",
+      "name": "developer_agent",
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        736,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "de2c86bc-7e6e-44af-a729-ca5c220c3d62",
+      "name": "Developer Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        736,
+        640
+      ]
+    },
+    {
+      "parameters": {
+        "toolDescription": "Delegate to the Tester Agent. Use to find weaknesses, identify risks, detect missing requirements, and challenge proposed solutions. Pass the solution or plan to challenge plus its objective and success criteria.",
+        "text": "={{ $fromAI(\"task\", \"The solution or plan to challenge, with its objective and success criteria\", \"string\") }}",
+        "options": {
+          "systemMessage": "You are the TESTER AGENT in an AI swarm led by a CEO Agent.\n\nYOUR RESPONSIBILITIES:\n- Find weaknesses\n- Identify risks\n- Detect missing requirements\n- Challenge proposed solutions\n\nRules:\n- Be adversarial and rigorous: actively try to break the proposed solution and question its assumptions.\n- Enumerate concrete weaknesses, missing requirements, and risks, ranked by severity.\n- Recommend specific fixes or improvements for each issue found. Do not invent information.\n- Return a structured, concise answer that directly serves the specific task the CEO gave you."
+        }
+      },
+      "id": "2d3dc95f-0318-457d-a113-877fb5d8b0c9",
+      "name": "tester_agent",
+      "type": "@n8n/n8n-nodes-langchain.agentTool",
+      "typeVersion": 3,
+      "position": [
+        864,
+        432
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "b1790297-787f-4dcb-80b5-8a6594185110",
+      "name": "Tester Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        864,
+        640
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Chat": {
+      "main": [
+        [
+          {
+            "node": "CEO Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "CEO Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "CEO Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Conversation Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "CEO Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "research_agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "CEO Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Research Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "research_agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "analyst_agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "CEO Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Analyst Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "analyst_agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "developer_agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "CEO Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Developer Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "developer_agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tester_agent": {
+      "ai_tool": [
+        [
+          {
+            "node": "CEO Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tester Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "tester_agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "256f41a8-ed91-4fb8-bae2-9fabf8f292a4",
+  "meta": {
+    "instanceId": "99a1c9d3cd8b58d468de40899a67c273c333d1dc27249da29d94046925b1a1d5"
+  },
+  "nodeGroups": [],
+  "id": "zGULWagZKRh85gpb",
+  "tags": []
+}
